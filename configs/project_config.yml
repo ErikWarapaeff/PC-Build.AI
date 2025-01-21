@@ -1,0 +1,6 @@
+langsmith:
+  tracing: "true"
+  project_name: "PC-Build Agents"
+
+memory:
+  directory: memory

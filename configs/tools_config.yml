@@ -1,0 +1,18 @@
+primary_agent:
+  llm: gpt-4o-mini
+  llm_temperature: 0.0
+
+langsmith:
+  tracing: "true"
+  project_name: "check sql agent"
+
+components_sqlagent_configs:
+  components_sqldb_dir: "data\\databases\\pc_accessories.db"
+  llm: "gpt-3.5-turbo"
+  llm_temperature: 0.0
+
+tavily_search_api:
+  tavily_search_max_results: 2
+
+graph_configs:
+  thread_id: 1 
