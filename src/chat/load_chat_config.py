@@ -13,7 +13,7 @@ class LoadProjectConfig:
     def __init__(self) -> None:
 
         # Load langsmith config
-        os.environ["LANGCHAIN_API_KEY"] = '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'
+        os.environ["LANGCHAIN_API_KEY"] = ''
         os.environ["LANGCHAIN_TRACING_V2"] = app_config["langsmith"]["tracing"]
         os.environ["LANGCHAIN_PROJECT"] = app_config["langsmith"]["project_name"]
 
