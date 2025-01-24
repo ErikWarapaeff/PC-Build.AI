@@ -11,7 +11,7 @@ from langchain_core.tools import tool
 load_dotenv()
 
 # Инициализация API ключа и модели
-os.environ['OPENAI_API_KEY'] = 'sk-6B8eZ_la_-IyLLSTuH6iiDUwsR4Ccc0QmMsdRJfE1KT3BlbkFJ5bxuCmk5FsxQ_VTRKfsxRhpx3Ji6WwJlk6hldwXWEA'
+os.environ['OPENAI_API_KEY'] = ''
 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.0)
 
 # Подключение к базе данных
@@ -94,3 +94,46 @@ def build_pc_with_budget_and_type(build_type: str = None, budget: float = 150000
             print(f"  Вариант {idx}: {variant}")
     
     return components
+
+
+@tool
+def check_compatibility(components: list) -> dict:
+    """Проверяет совместимость компонентов ПК (например, совместимость процессора с материнской платой, количество ОЗУ и тип корпуса).
+    
+    Args:
+        components (list): Список компонентов для проверки совместимости.
+
+    Returns:
+        dict: Словарь с результатами проверок совместимости.
+    """
+    compatibility_results = {}
+
+    # Инициализация переменных для хранения конкретных компонентов
+    cpu = next((comp for comp in components if comp['component'] == 'cpu'), None)
+    motherboard = next((comp for comp in components if comp['component'] == 'motherboard'), None)
+    ram = next((comp for comp in components if comp['component'] == 'ram'), None)
+    case = next((comp for comp in components if comp['component'] == 'case'), None)
+    
+    # Если процессор и материнская плата найдены, проверяем их совместимость
+    if cpu and motherboard:
+        query_cpu_motherboard = f"Проверь, совместим ли процессор {cpu['variants'][0]} с материнской платой {motherboard['variants'][0]}."
+        compatibility_results['cpu_motherboard'] = agent_executor.invoke({"input": query_cpu_motherboard})
+
+    # Если оперативная память найдена, проверяем её совместимость с максимальным объемом и количеством слотов
+    if ram:
+        max_memory = ram['variants'][0].get('max_memory', None)  # Максимально допустимый объём памяти для материнской платы
+        memory_slots = ram['variants'][0].get('memory_slots', None)  # Количество слотов памяти
+        if max_memory and memory_slots:
+            query_ram = f"Проверь, соответствует ли количество оперативной памяти {ram['variants'][0]} максимальному объему {max_memory} и количеству слотов памяти {memory_slots}."
+            compatibility_results['ram'] = agent_executor.invoke({"input": query_ram})
+
+    # Если корпус и материнская плата найдены, проверяем их совместимость по типу
+    if case and motherboard:
+        case_type = case['variants'][0].get('type', None)  # Тип корпуса
+        motherboard_form_factor = motherboard['variants'][0].get('form_factor', None)  # Форм-фактор материнской платы
+        if case_type and motherboard_form_factor:
+            query_case_motherboard = f"Проверь, совпадает ли тип корпуса {case_type} с форм-фактором материнской платы {motherboard_form_factor}."
+            compatibility_results['case_motherboard'] = agent_executor.invoke({"input": query_case_motherboard})
+    
+    # Возвращаем результаты проверок совместимости
+    return compatibility_results

@@ -12,9 +12,7 @@ class LoadToolsConfig:
         with open(here("configs/tools_config.yml")) as cfg:
             app_config = yaml.load(cfg, Loader=yaml.FullLoader)
 
-        # Set environment variables
-        os.environ['OPENAI_API_KEY'] = 'sk-6B8eZ_la_-IyLLSTuH6iiDUwsR4Ccc0QmMsdRJfE1KT3BlbkFJ5bxuCmk5FsxQ_VTRKfsxRhpx3Ji6WwJlk6hldwXWEA'
-        os.environ['TAVILY_API_KEY'] = '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'
+    
 
         # Primary agent
         self.primary_agent_llm = app_config["primary_agent"]["llm"]
