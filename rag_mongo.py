@@ -34,7 +34,7 @@ db = client["llm_database"]
 collection = db["exp_fm_jun_3"]
 
 # Установите OpenAI API ключ
-os.environ["OPENAI_API_KEY"] = 'sk-6B8eZ_la_-IyLLSTuH6iiDUwsR4Ccc0QmMsdRJfE1KT3BlbkFJ5bxuCmk5FsxQ_VTRKfsxRhpx3Ji6WwJlk6hldwXWEA'
+os.environ["OPENAI_API_KEY"] = ''
 
 # Helper Classes and Functions
 
