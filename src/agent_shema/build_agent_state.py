@@ -1,60 +1,46 @@
-from typing import Annotated, Literal, Optional, List
+from typing import Annotated, Literal, Optional
 from typing_extensions import TypedDict
 from langgraph.graph.message import AnyMessage, add_messages
 
 
-def update_build_history(history: List[dict], new_build: Optional[dict]) -> List[dict]:
+
+def update_dialog_stack(left: list[str], right: Optional[str]) -> list[str]:
     """
-    Updates the build history by adding a new build or clearing the history.
+    Push or pop the state: Updates the dialog stack by either adding a new state or removing the last state.
 
     Args:
-        history (List[dict]): The current build history.
-        new_build (Optional[dict]): If provided, the new build is added to the history.
-                                     If `new_build` is None, the history is returned unchanged.
+        left (list[str]): The current state of the dialog stack, represented as a list of strings.
+        right (Optional[str]): The operation to perform. If `right` is None, the function returns the current state.
+                               If `right` is "pop", the last element of the stack is removed. Otherwise, `right` is 
+                               appended to the stack.
 
     Returns:
-        List[dict]: The updated build history.
+        list[str]: The updated dialog stack.
     """
-    if new_build is None:
-        return history
-    if new_build == "clear":
-        return []  # Clears the build history.
-    return history + [new_build]
-
-
-class PCBuild(TypedDict):
-    """
-    Represents a single PC component in a build.
-
-    Attributes:
-        type (str): The type of the component (e.g., "cpu", "gpu", "memory").
-        name (str): The name of the component.
-        price (int): The price of the component.
-    """
-    component: str
-    name: str
-    price: int
-    characteristics: Optional[dict] = None
-    bottleneck: Optional[dict] = None
-    game_runs: Optional[dict] = None
-    
+    if right is None:
+        return left
+    if right == "pop" and left:
+        return left[:-1]  
+    if right not in ["assistant", "build_pc", "validate_price"]:
+        raise ValueError(f"Invalid state transition: {right}")
+    return left + [right]
 
 
 class State(TypedDict):
     """
-    Represents the state of the PC building system.
+    Состояние графа системы
 
     Attributes:
-        build_type (Literal): The type of the build, e.g., "gaming", "office", "workstation".
-        budget (int): The total budget for the PC build.
-        current_build (List[PCBuild]): The components in the current PC build.
-        build_history (List[dict]): A list of previously completed builds.
+        messages (list[AnyMessage]): История сообщений, используется для отслеживания контекста.
+        user_info (Optional[str]): Информация о пользователе (например, предпочтения, бюджет).
+        dialog_state (list[str]): Стек состояний диалога, управляет активными агентами:
+                                  - "assistant": Основной ассистент (начальное состояние).
+                                  - "build_pc": Агент баз данных (SQLAgent) для поиска информации о компонентах.
+                                  - "price_validation_checker": Агент для поиска актуальных цен и валидации сборки.
     """
     messages: Annotated[list[AnyMessage], add_messages]
-    build_type: Literal["gaming", "office", "workstation"]
-    budget: int
-    current_build: Optional[List[PCBuild]] = None
-    build_history: Annotated[List[dict], update_build_history]
-
-
-
+    user_info: Optional[str]  
+    dialog_state: Annotated[
+        list[Literal["assistant", "build_pc", "validate_price"]],
+        update_dialog_stack,
+    ]

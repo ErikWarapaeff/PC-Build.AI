@@ -1,59 +1,52 @@
 import gradio as gr
 from chat_backend import ChatBot
-from src.utils.ui_settings import UISettings
-
+from utils.ui_settings import UISettings
 
 with gr.Blocks() as demo:
     with gr.Tabs():
-        with gr.TabItem("AgentGraph"):
+        with gr.TabItem("PC Customer Advisor"):
             ##############
-            # First ROW:
+            # Первая строка:
             ##############
             with gr.Row() as row_one:
                 chatbot = gr.Chatbot(
-                    [],
+                    value=[{"role": "system", "content": "Привет! Я твой проводник в мир компьютерной техники. Чем сегодня могу тебе помочь?"}],
+                    type="messages",
                     elem_id="chatbot",
                     bubble_full_width=False,
                     height=500,
-                    
-                    # render=False
+                    avatar_images=("images/user.jpg", "images/chatbot.png"),
                 )
-                # **Adding like/dislike icons
                 chatbot.like(UISettings.feedback, None, None)
+
             ##############
-            # SECOND ROW:
+            # Вторая строка:
             ##############
             with gr.Row():
                 input_txt = gr.Textbox(
-                    lines=3,
+                    lines=2,
                     scale=8,
-                    placeholder="Enter text and press enter, or upload PDF files",
+                    placeholder="Введите текст и нажмите Enter или загрузите PDF файлы",
                     container=False,
                 )
 
             ##############
-            # Third ROW:
+            # Третья строка:
             ##############
             with gr.Row() as row_two:
-                text_submit_btn = gr.Button(value="Submit text")
+                text_submit_btn = gr.Button(value="Отправить текст")
                 clear_button = gr.ClearButton([input_txt, chatbot])
+
             ##############
-            # Process:
+            # Обработка:
             ##############
             txt_msg = input_txt.submit(fn=ChatBot.respond,
                                        inputs=[chatbot, input_txt],
-                                       outputs=[input_txt,
-                                                chatbot],
-                                       queue=False).then(lambda: gr.Textbox(interactive=True),
-                                                         None, [input_txt], queue=False)
+                                       outputs=[input_txt, chatbot])
 
             txt_msg = text_submit_btn.click(fn=ChatBot.respond,
                                             inputs=[chatbot, input_txt],
-                                            outputs=[input_txt,
-                                                     chatbot],
-                                            queue=False).then(lambda: gr.Textbox(interactive=True),
-                                                              None, [input_txt], queue=False)
-
+                                            outputs=[input_txt, chatbot])
 
 if __name__ == "__main__":
     demo.launch()
