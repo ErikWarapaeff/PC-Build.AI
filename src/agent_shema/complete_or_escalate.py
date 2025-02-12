@@ -24,4 +24,8 @@ class CompleteOrEscalate(BaseModel):
                 "cancel": False,
                 "reason": "Мне нужно поискать дополнительную информацию о ценах",
             },
+            "example 4": {
+                "cancel": True,
+                "reason": "Это задача не относится к моей",
+            }
         }
