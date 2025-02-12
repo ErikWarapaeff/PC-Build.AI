@@ -33,7 +33,7 @@ class AIAgentRunnables:
             ToPriceValidationCheckerAssistant,
         ]
         primary_assistant_runnable = AGENT_PROMPTS.primary_assistant_prompt | CFG.llm.bind_tools(
-            primary_assistant_tools + [CompleteOrEscalate]
+            primary_assistant_tools
         )
         return primary_assistant_tools, primary_assistant_runnable
 
