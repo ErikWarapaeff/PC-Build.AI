@@ -5,7 +5,7 @@ Advanced multi-agent application designed to automate and optimize the process o
 ## Инструкции для запуска:
 1. **Склонируйте репозиторий:**
    ```bash
-   git clone https://github.com/Farzad-R/TBD
+   git clone https://github.com/ErikWarapaeff/PC-Build.AI
    ```
 
 2. **Создайте виртуальное окружение:**
