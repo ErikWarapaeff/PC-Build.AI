@@ -29,7 +29,7 @@ Advanced multi-agent application designed to automate and optimize the process o
    ```
 
 5. **Введите все API ключи:**
-   Edit the `.env` file and add:
+   Введите все ключи в  `.env`:
    ```
    OPEN_AI_API_KEY=...
    LANGCHAIN_API_KEY=...
