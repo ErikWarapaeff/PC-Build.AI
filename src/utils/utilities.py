@@ -81,21 +81,24 @@ def _print_event(event: dict, _printed: set, max_length=1500):
 
 def create_entry_node(assistant_name: str, new_dialog_state: str) -> Callable:
     """
-    Создает функцию для перехода в новый этап диалога с указанием состояния и инструмента.
+    Создает функцию для перехода к новому этапу диалога с указанием состояния и инструмента.
 
     Аргументы:
-        assistant_name (str): Название помощника, который будет использоваться в сообщении.
+        assistant_name (str): Имя помощника, который будет использоваться в сообщении.
         new_dialog_state (str): Новое состояние диалога после перехода.
 
     Возвращает:
-        Callable: Функция, которая при вызове с объектом `State` возвращает словарь с инструментом и обновленным состоянием диалога.
+        Callable: Функция, которая при вызове с объектом `State` возвращает словарь 
+        с инструментом и обновленным состоянием диалога.
 
-    Функция выполняет следующие действия:
-        - Извлекает `tool_call_id` из последнего сообщения с первым вызовом инструмента в `State`.
-        - Строит сообщение для инструмента, информируя пользователя, что сейчас работает указанный помощник.
-        - Обновляет состояние диалога с учетом нового состояния.
-        - Сообщение инструмента информирует помощника, что задача не завершена до тех пор, пока не будет успешно вызван подходящий инструмент.
-        - Если пользователь изменит свое решение или потребуется помощь по другим задачам, сообщение советует вызвать функцию `CompleteOrEscalate`, чтобы вернуть управление основному помощнику.
+    Описание работы функции:
+        - Извлекает `tool_call_id` из последнего сообщения, в котором был вызван инструмент, в `State`.
+        - Формирует сообщение для инструмента, информируя пользователя о том, что активирован указанный помощник.
+        - Обновляет состояние диалога, устанавливая новое состояние.
+        - Сообщение инструмента указывает помощнику, что задача считается незавершенной, 
+          пока необходимый инструмент не будет успешно вызван.
+        - Если пользователь изменит свое решение или потребуется помощь в других вопросах, 
+          сообщение рекомендует вызвать функцию `CompleteOrEscalate`, чтобы передать управление основному помощнику.
     """
     def entry_node(state: State) -> dict:
         tool_call_id = state["messages"][-1].tool_calls[0]["id"]
@@ -103,12 +106,12 @@ def create_entry_node(assistant_name: str, new_dialog_state: str) -> Callable:
             "messages": [
                 ToolMessage(
                     content=(
-                        f"The {assistant_name} assistant is currently active. Please review the previous conversation "
-                        f"between the main assistant and the user. The user's goal has not been completed. "
-                        f"Use the provided tools to complete the task. Remember, you are {assistant_name}, and the action "
-                        "is not complete until the necessary tool has been successfully invoked. "
-                        "If the user changes their mind or requires help with other matters, invoke the CompleteOrEscalate function "
-                        "to return control to the main assistant."
+                        f"Помощник {assistant_name} сейчас активен. Пожалуйста, ознакомьтесь с предыдущим диалогом "
+                        f"между основным помощником и пользователем. Цель пользователя пока не выполнена. "
+                        f"Используйте доступные инструменты для завершения задачи. Помните, что вы {assistant_name}, "
+                        "и действие считается завершенным только после успешного вызова необходимого инструмента. "
+                        "Если пользователь изменит свое мнение или потребуется помощь по другим вопросам, вызовите функцию "
+                        "CompleteOrEscalate, чтобы вернуть управление основному помощнику."
                     ),
                     tool_call_id=tool_call_id,
                 )
@@ -117,3 +120,4 @@ def create_entry_node(assistant_name: str, new_dialog_state: str) -> Callable:
         }
 
     return entry_node
+
